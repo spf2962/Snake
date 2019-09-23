@@ -13,17 +13,37 @@ from tkinter import messagebox
 
 # Class to create a cube, used to make the snake
 class Cube(object):
-    rows = 0
-    w = 0
+    rows = 20
+    w = 500
 
     def __init__(self, start, dirnx=1, dirny=0, color=(255, 0, 0)):
-        pass
+        self.pos = start
+        self.dirnx = 1
+        self.dirny = 0
+        self.color = color
 
     def move(self, dirnx, dirny):
-        pass
+        self.dirnx = dirnx
+        self.dirny = dirny
+        self.pos = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny)
 
     def draw(self, surface, eyes=False):
-        pass
+        distance = self.w // self.rows
+        # i = row, j = column
+        i = self.pos[0]
+        j = self.pos[1]
+
+        # Make the cube slightly smaller than the square it is being drawn on so it doesn't cover the grid lines
+        pygame.draw.rect(surface, self.color, (i * distance + 1,  j * distance + 1,  distance - 2, distance - 2))
+
+        # Draw the snakes eyes to distingquish the head
+        if eyes:
+            center = distance // 2
+            radius = 3
+            circleMiddle = (i * distance + center - radius, j * distance + 8)
+            circleMiddle2 = (i * distance + distance - radius * 2, j * distance + 8)
+            pygame.draw.circle(surface, (0, 0, 0), circleMiddle, radius)
+            pygame.draw.circle(surface, (0, 0, 0), circleMiddle2, radius)
 
 
 # Class structure for snake to move around and grow if it eats the food
@@ -117,8 +137,9 @@ def drawGrid(w, rows, surface):
 
 def redrawWindow(surface):
     global rows, width, s
+    surface.fill((0, 0, 0))
     s.draw(surface)
-    surface.fill((0,0,0))
+
     drawGrid(width, rows, surface)
     pygame.display.update()
 
@@ -139,7 +160,7 @@ def main():
     win = pygame.display.set_mode((width, height))
 
     # Create snek and set the color to red set it in the middle of the board
-    snek = Snake((255,0,0), (10, 10))
+    s = Snake((255, 0, 0), (10, 10))
 
     flag = True
     clock = pygame.time.Clock()
@@ -147,7 +168,7 @@ def main():
     while flag:
         pygame.time.delay(50)
         clock.tick(10)
-
+        s.move()
         redrawWindow(win)
 
 
