@@ -10,12 +10,13 @@ import pygame
 import tkinter as tk
 from tkinter import messagebox
 
+
 # Class to create a cube, used to make the snake
-class cube(object):
+class Cube(object):
     rows = 0
     w = 0
 
-    def __init__(self,start,dirnx=1,dirny=0,color=(255,0,0)):
+    def __init__(self, start, dirnx=1, dirny=0, color=(255, 0, 0)):
         pass
 
     def move(self, dirnx, dirny):
@@ -26,17 +27,16 @@ class cube(object):
 
 
 # Class structure for snake to move around and grow if it eats the food
-class snake(object):
+class Snake(object):
     body = []
     turns = {}
 
     def __init__(self, color,pos):
         self.color = color
-        self.head = cube(pos)
+        self.head = Cube(pos)
         self.body.append(self.head)
         self.dirnx = 0
         self.dirny = 1
-
 
     def move(self):
         for event in pygame.event.get():
@@ -66,24 +66,24 @@ class snake(object):
                     self.dirny = 1
                     self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
 
-            for index, cub in enumerate(self.body):
-                position = cub.pos[:]
+            for index, cube in enumerate(self.body):
+                position = cube.pos[:]
                 if position in self.turns:
                     turn = self.turns[position]
-                    cub.move(turn[0], turn[1])
+                    cube.move(turn[0], turn[1])
                     if index == len(self.body) - 1:
                         self.turns.pop(position)
                 # Check if the snake goes out of bounds
                 else:
                     # If snake reaches the left side of the screen move it to the right side
-                    if cub.dirnx == -1 and cub.pos[0] <= 0: cub.pos = (cub.rows-1, cub.pos[1])
+                    if cube.dirnx == -1 and cube.pos[0] <= 0: cube.pos = (cube.rows-1, cube.pos[1])
                     # If snake reaches the right side of the screen move it to the left side of the screen
-                    elif cub.dirnx == 1 and cub.pos[0] >= cub.rows-1: cub.pos = (0, cub.pos[1])
+                    elif cube.dirnx == 1 and cube.pos[0] >= cube.rows-1: cube.pos = (0, cube.pos[1])
                     # If snake reaches the top of the screen move it to the bottom row
-                    elif cub.dirny == 1 and cub.pos[1] >= cub.rows-1: cub.pos = (cub.pos[0], 0)
+                    elif cube.dirny == 1 and cube.pos[1] >= cube.rows-1: cube.pos = (cube.pos[0], 0)
                     # If snake reaches the bottom of the screen move it to the top row
-                    elif cub.dirny == -1 and cub.pos[1] <= 0: cub.pos = (cub.pos[0], cub.rows-1)
-                    else: cub.move(cub.dirnx, cub.dirny)
+                    elif cube.dirny == -1 and cube.pos[1] <= 0: cube.pos = (cube.pos[0], cube.rows-1)
+                    else: cube.move(cube.dirnx, cube.dirny)
 
 
     def reset(self, pos):
@@ -93,7 +93,11 @@ class snake(object):
         pass
 
     def draw(self, surface):
-        pass
+        for index, cube in enumerate(self.body):
+            if index == 0:
+                cube.draw(surface, True)
+            else:
+                cube.draw(surface)
 
 
 # Function that draws the grid
@@ -112,7 +116,8 @@ def drawGrid(w, rows, surface):
 
 
 def redrawWindow(surface):
-    global rows, width
+    global rows, width, s
+    s.draw(surface)
     surface.fill((0,0,0))
     drawGrid(width, rows, surface)
     pygame.display.update()
@@ -127,14 +132,14 @@ def message_box(subject, content):
 
 
 def main():
-    global width, rows
+    global width, rows, s
     width = 500
     height = 500
     rows = 20
     win = pygame.display.set_mode((width, height))
 
     # Create snek and set the color to red set it in the middle of the board
-    snek = snake((255,0,0), (10, 10))
+    snek = Snake((255,0,0), (10, 10))
 
     flag = True
     clock = pygame.time.Clock()
